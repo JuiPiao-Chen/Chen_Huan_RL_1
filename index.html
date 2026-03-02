@@ -5,76 +5,299 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CHEN, JUI-PIAO</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            background: #0a0a0f;
+            color: #00ffff;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
         }
+
+        /* 動態網格背景 */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+        }
+
+        /* 掃描線效果 */
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                transparent 50%,
+                rgba(0, 0, 0, 0.1) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        /* 流動光線 */
+        .light-beam {
+            position: fixed;
+            top: -100%;
+            left: 50%;
+            width: 2px;
+            height: 200%;
+            background: linear-gradient(transparent, #00ffff, transparent);
+            animation: beamMove 3s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        .light-beam:nth-child(2) { left: 30%; animation-delay: 1s; }
+        .light-beam:nth-child(3) { left: 70%; animation-delay: 2s; }
+
+        @keyframes beamMove {
+            0%, 100% { transform: translateY(-20%); opacity: 0; }
+            50% { transform: translateY(20%); opacity: 0.3; }
+        }
+
         .container {
             text-align: center;
-            padding: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            padding: 60px;
+            background: rgba(0, 20, 30, 0.8);
+            border: 1px solid #00ffff;
+            border-radius: 10px;
+            position: relative;
+            z-index: 10;
+            box-shadow:
+                0 0 20px rgba(0, 255, 255, 0.3),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
         }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            border-radius: 12px;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(10px);
+            animation: borderGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .label {
+            font-size: 0.8rem;
+            color: #888;
+            letter-spacing: 3px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
         .name {
             font-size: 3rem;
             font-weight: bold;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            text-shadow:
+                0 0 10px #00ffff,
+                0 0 20px #00ffff,
+                0 0 40px #00ffff;
+            animation: textFlicker 4s infinite;
+            letter-spacing: 5px;
         }
-        .datetime {
-            font-size: 1.5rem;
+
+        @keyframes textFlicker {
+            0%, 100% { opacity: 1; }
+            92% { opacity: 1; }
+            93% { opacity: 0.8; }
+            94% { opacity: 1; }
+            95% { opacity: 0.9; }
+            96% { opacity: 1; }
         }
+
+        .datetime-container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .datetime-box {
+            padding: 20px 30px;
+            background: rgba(0, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 5px;
+            min-width: 200px;
+        }
+
         .date {
-            margin-bottom: 10px;
+            font-size: 1.2rem;
+            color: #00ffaa;
         }
+
         .time {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px #00ffff;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 3px;
+        }
+
+        .status-bar {
+            margin-top: 30px;
+            font-size: 0.75rem;
+            color: #00ff00;
+            letter-spacing: 2px;
+        }
+
+        .status-bar::before {
+            content: '> ';
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* 角落裝飾 */
+        .corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #00ffff;
+            border-style: solid;
+        }
+
+        .corner-tl { top: 10px; left: 10px; border-width: 2px 0 0 2px; }
+        .corner-tr { top: 10px; right: 10px; border-width: 2px 2px 0 0; }
+        .corner-bl { bottom: 10px; left: 10px; border-width: 0 0 2px 2px; }
+        .corner-br { bottom: 10px; right: 10px; border-width: 0 2px 2px 0; }
+
+        /* 粒子效果 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #00ffff;
+            border-radius: 50%;
+            animation: float 15s infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
+    <div class="grid-bg"></div>
+    <div class="scanline"></div>
+    <div class="light-beam"></div>
+    <div class="light-beam"></div>
+    <div class="light-beam"></div>
+
+    <div class="particles" id="particles"></div>
+
     <div class="container">
+        <div class="corner corner-tl"></div>
+        <div class="corner corner-tr"></div>
+        <div class="corner corner-bl"></div>
+        <div class="corner corner-br"></div>
+
+        <div class="label">Identity Verified</div>
         <div class="name">CHEN, JUI-PIAO</div>
-        <div class="datetime">
-            <div class="date" id="date"></div>
-            <div class="time" id="time"></div>
+
+        <div class="datetime-container">
+            <div class="datetime-box">
+                <div class="label">System Date</div>
+                <div class="date" id="date"></div>
+            </div>
+            <div class="datetime-box">
+                <div class="label">Local Time</div>
+                <div class="time" id="time"></div>
+            </div>
         </div>
+
+        <div class="status-bar">SYSTEM ONLINE | ALL SYSTEMS OPERATIONAL</div>
     </div>
 
     <script>
+        // 更新日期時間
         function updateDateTime() {
             const now = new Date();
 
             const dateOptions = {
                 year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                weekday: 'long'
+                month: '2-digit',
+                day: '2-digit',
+                weekday: 'short'
             };
             const dateStr = now.toLocaleDateString('zh-TW', dateOptions);
 
-            const timeStr = now.toLocaleTimeString('zh-TW', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: false
-            });
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            const timeStr = `${hours}:${minutes}:${seconds}`;
 
             document.getElementById('date').textContent = dateStr;
             document.getElementById('time').textContent = timeStr;
         }
 
+        // 創建粒子
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particle.style.animationDuration = (10 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+
         updateDateTime();
         setInterval(updateDateTime, 1000);
+        createParticles();
     </script>
 </body>
 </html>
