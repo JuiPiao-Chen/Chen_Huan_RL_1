@@ -2,6 +2,10 @@
 
 A personal webpage project for the Deep Reinforcement Learning course.
 
+## Screenshot
+
+![Website Screenshot](screenshot.png)
+
 ## Author
 
 **CHEN, JUI-PIAO**
